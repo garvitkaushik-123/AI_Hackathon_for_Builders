@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.database.db import init_db
+from backend.routers import dashboard, costs, resources, scan, recommendations
 
 app = FastAPI(title="Cloud Cost Optimizer")
 
@@ -12,6 +13,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(dashboard.router)
+app.include_router(costs.router)
+app.include_router(resources.router)
+app.include_router(scan.router)
+app.include_router(recommendations.router)
 
 
 @app.on_event("startup")
