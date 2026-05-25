@@ -25,11 +25,20 @@ const BADGE_STYLES: Record<string, string> = {
 export default function RecommendationCard({
   rec,
   onDismiss,
+  onChat,
 }: {
   rec: Recommendation;
   onDismiss: (id: number) => void;
+  onChat?: (question: string) => void;
 }) {
   if (rec.status === "dismissed") return null;
+
+  const handleAskAI = () => {
+    const question = rec.resource_id
+      ? `Explain this recommendation in detail and give me step-by-step instructions to fix it: "${rec.title}" for resource ${rec.resource_id}. Current estimated savings: $${rec.estimated_savings}/mo.`
+      : `Explain this recommendation in detail and give me step-by-step instructions to fix it: "${rec.title}". Current estimated savings: $${rec.estimated_savings}/mo.`;
+    onChat?.(question);
+  };
 
   return (
     <div className={`border rounded-lg p-4 ${SEVERITY_STYLES[rec.severity] || ""}`}>
@@ -53,6 +62,15 @@ export default function RecommendationCard({
       <p className="text-xs text-gray-400">{rec.description}</p>
       {rec.resource_id && (
         <p className="text-xs text-gray-500 mt-2 font-mono">{rec.resource_id}</p>
+      )}
+      {onChat && (
+        <button
+          onClick={handleAskAI}
+          className="mt-3 w-full flex items-center justify-center gap-1.5 text-xs font-medium text-emerald-400 bg-emerald-400/10 hover:bg-emerald-400/20 border border-emerald-400/20 rounded-md py-1.5 px-3 transition-colors cursor-pointer"
+        >
+          <span>&#x1F4AC;</span>
+          Ask AI about this
+        </button>
       )}
     </div>
   );

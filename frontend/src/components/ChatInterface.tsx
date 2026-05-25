@@ -1,12 +1,16 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useImperativeHandle, forwardRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { askStream } from "@/lib/api";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
+}
+
+export interface ChatInterfaceHandle {
+  sendMessage: (question: string) => void;
 }
 
 const SUGGESTED_PROMPTS = [
@@ -17,23 +21,25 @@ const SUGGESTED_PROMPTS = [
   "What would I save with reserved instances?",
 ];
 
-export default function ChatInterface() {
+const ChatInterface = forwardRef<ChatInterfaceHandle>(function ChatInterface(_props, ref) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const streamingRef = useRef(false);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = async (question: string) => {
-    if (!question.trim() || streaming) return;
+    if (!question.trim() || streamingRef.current) return;
 
     const userMsg: Message = { role: "user", content: question };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setStreaming(true);
+    streamingRef.current = true;
 
     const assistantMsg: Message = { role: "assistant", content: "" };
     setMessages((prev) => [...prev, assistantMsg]);
@@ -62,7 +68,12 @@ export default function ChatInterface() {
     }
 
     setStreaming(false);
+    streamingRef.current = false;
   };
+
+  useImperativeHandle(ref, () => ({
+    sendMessage,
+  }));
 
   return (
     <div className="flex flex-col h-[calc(100vh-10rem)]">
@@ -238,4 +249,6 @@ export default function ChatInterface() {
       </div>
     </div>
   );
-}
+});
+
+export default ChatInterface;
