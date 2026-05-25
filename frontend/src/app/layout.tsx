@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CloudOpt - AWS Cost Optimizer",
+  title: "CloudOPT - AWS Cost Optimizer",
   description: "AI-powered cloud cost optimization",
 };
 
@@ -38,7 +38,7 @@ export default function RootLayout({
       <body className="bg-gray-950 text-gray-100 min-h-screen flex">
         <aside className="w-64 bg-gray-900 border-r border-gray-800 p-6 flex flex-col">
           <h1 className="text-xl font-bold text-white mb-8">
-            <span className="text-emerald-400">Cloud</span>Opt
+            <span className="text-emerald-400">Cloud</span>OPT
           </h1>
           <nav className="flex flex-col gap-1">
             {navItems.map((item) => (

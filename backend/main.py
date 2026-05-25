@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database.db import init_db
 from routers import dashboard, costs, resources, scan, recommendations, ask, settings
 
-app = FastAPI(title="Cloud Cost Optimizer")
+app = FastAPI(title="CloudOPT")
 
 app.add_middleware(
     CORSMiddleware,
