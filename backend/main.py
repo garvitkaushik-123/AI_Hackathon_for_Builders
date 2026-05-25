@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.database.db import init_db
-from backend.routers import dashboard, costs, resources, scan, recommendations, ask
+from database.db import init_db
+from routers import dashboard, costs, resources, scan, recommendations, ask
 
 app = FastAPI(title="Cloud Cost Optimizer")
 

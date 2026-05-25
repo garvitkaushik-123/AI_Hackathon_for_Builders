@@ -1,8 +1,8 @@
 import json
 from fastapi import APIRouter, Request
 from sse_starlette.sse import EventSourceResponse
-from backend.database.db import get_db
-from backend.analysis.gemini import ask_question_stream
+from database.db import get_db
+from analysis.gemini import ask_question_stream
 
 router = APIRouter(prefix="/api")
 

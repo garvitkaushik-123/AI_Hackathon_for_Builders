@@ -1,6 +1,6 @@
 import json
 from fastapi import APIRouter, Query
-from backend.database.db import get_db
+from database.db import get_db
 
 router = APIRouter(prefix="/api")
 

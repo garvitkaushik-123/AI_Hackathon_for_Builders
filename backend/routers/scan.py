@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from backend.collectors.scanner import run_scan
+from collectors.scanner import run_scan
 
 router = APIRouter(prefix="/api")
 

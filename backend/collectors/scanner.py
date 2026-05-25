@@ -1,10 +1,10 @@
 import json
 from datetime import datetime, timezone
 
-from backend.database.db import get_db
-from backend.collectors.mock_data import generate_all_mock_data
-from backend.analysis.gemini import generate_recommendations
-from backend.config import USE_MOCK_DATA
+from database.db import get_db
+from collectors.mock_data import generate_all_mock_data
+from analysis.gemini import generate_recommendations
+from config import USE_MOCK_DATA
 
 
 async def run_scan() -> int:
