@@ -46,6 +46,11 @@ CREATE TABLE IF NOT EXISTS recommendations (
     created_at TEXT NOT NULL,
     FOREIGN KEY (scan_id) REFERENCES scans(id)
 );
+
+CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+);
 """
 
 

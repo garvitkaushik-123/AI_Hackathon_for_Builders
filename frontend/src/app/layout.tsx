@@ -22,6 +22,7 @@ const navItems = [
   { href: "/", label: "Dashboard", icon: "📊" },
   { href: "/resources", label: "Resources", icon: "🖥️" },
   { href: "/ask", label: "AI Assistant", icon: "🤖" },
+  { href: "/settings", label: "Settings", icon: "⚙️" },
 ];
 
 export default function RootLayout({

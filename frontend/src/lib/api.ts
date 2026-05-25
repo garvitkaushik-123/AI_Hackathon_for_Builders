@@ -38,6 +38,35 @@ export async function dismissRecommendation(id: number) {
   return res.json();
 }
 
+export async function fetchAWSStatus() {
+  const res = await fetch(`${API_BASE}/settings/aws`);
+  return res.json();
+}
+
+export async function connectAWS(credentials: {
+  access_key_id: string;
+  secret_access_key: string;
+  region: string;
+}) {
+  const res = await fetch(`${API_BASE}/settings/aws`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(credentials),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.detail || "Failed to connect");
+  }
+  return res.json();
+}
+
+export async function disconnectAWS() {
+  const res = await fetch(`${API_BASE}/settings/disconnect`, {
+    method: "POST",
+  });
+  return res.json();
+}
+
 export async function* askStream(question: string) {
   const res = await fetch(`${API_BASE}/ask`, {
     method: "POST",
