@@ -1,65 +1,82 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import { fetchSummary, fetchCosts, triggerScan } from "@/lib/api";
+import SummaryCards from "@/components/SummaryCards";
+import CostChart from "@/components/CostChart";
+import TopServicesChart from "@/components/TopServicesChart";
+
+interface SummaryData {
+  total_monthly_spend: number;
+  month_over_month_change: number;
+  total_potential_savings: number;
+  resources_scanned: number;
+  last_scan_time: string | null;
+  top_services: { service: string; total: number }[];
+}
+
+export default function Dashboard() {
+  const [summary, setSummary] = useState<SummaryData | null>(null);
+  const [costs, setCosts] = useState([]);
+  const [scanning, setScanning] = useState(false);
+
+  const loadData = async () => {
+    const [s, c] = await Promise.all([fetchSummary(), fetchCosts()]);
+    setSummary(s);
+    setCosts(c);
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const handleScan = async () => {
+    setScanning(true);
+    await triggerScan();
+    await loadData();
+    setScanning(false);
+  };
+
+  const hasData = summary && summary.last_scan_time;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          {summary?.last_scan_time && (
+            <p className="text-sm text-gray-400 mt-1">
+              Last scanned: {new Date(summary.last_scan_time).toLocaleString()}
+            </p>
+          )}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <button
+          onClick={handleScan}
+          disabled={scanning}
+          className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors cursor-pointer disabled:cursor-not-allowed"
+        >
+          {scanning ? "Scanning..." : "Scan Now"}
+        </button>
+      </div>
+
+      {!hasData ? (
+        <div className="flex flex-col items-center justify-center h-96 bg-gray-900 border border-gray-800 rounded-xl">
+          <p className="text-xl text-gray-400 mb-4">No scan data yet</p>
+          <button
+            onClick={handleScan}
+            disabled={scanning}
+            className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-700 text-white px-8 py-3 rounded-lg font-medium text-lg transition-colors cursor-pointer disabled:cursor-not-allowed"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            {scanning ? "Scanning..." : "Run Your First Scan"}
+          </button>
         </div>
-      </main>
+      ) : (
+        <div className="flex flex-col gap-6">
+          <SummaryCards data={summary} />
+          <CostChart data={costs} />
+          <TopServicesChart data={summary.top_services} />
+        </div>
+      )}
     </div>
   );
 }
